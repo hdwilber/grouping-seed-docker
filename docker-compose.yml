@@ -1,0 +1,36 @@
+version: '2'
+services: 
+  si-mongodb:
+    build: ${APP_DATA_ROOT}/database
+    ports:
+      - 49999:27017
+    volumes: 
+      - ${APP_DATA_ROOT}/database/db:/data/db
+    command: mongod
+    container_name: si_mongodb_instance
+
+  backend-server: 
+    build: ${APP_SERVERS_ROOT}/${BACKEND_SERVER_NAME}
+    volumes: 
+      - ${APP_SERVERS_ROOT}/server:/home/node/app
+      - ${APP_DATA_ROOT}/${BACKEND_STORAGE_FOLDER}:/home/node/app/storage
+    ports: 
+      - 5000:3000
+    links: 
+      - si-mongodb
+    depends_on:
+      - si-mongodb
+    container_name: si_backend_instance
+
+
+  frontend-server:
+    build: ${APP_SERVERS_ROOT}/${FRONTEND_SERVER_NAME}
+    volumes:
+      - ${APP_SERVERS_ROOT}/${FRONTEND_SERVER_NAME}:/home/node/app
+    ports: 
+      - 5001:3000
+    links: 
+      - backend-server
+    depends_on:
+      - backend-server
+    container_name: si_frontend_instance

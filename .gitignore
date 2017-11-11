@@ -1,0 +1,5 @@
+servers/
+node_modules/
+.env
+data/database/db
+data/database/log
